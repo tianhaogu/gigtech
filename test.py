@@ -22,7 +22,6 @@ if __name__ == '__main__':
     column_left = next(data_left)[0:]
     df_left = pd.DataFrame(data_left, columns=column_left)
     df_left = df_left.iloc[:, [5,6,7,8,9,10,12]]
-    #print(df_left)
 
     count_row = 1
     for row in ws_right:
@@ -49,11 +48,9 @@ if __name__ == '__main__':
     column_right = ["polygon", "x1", "y1", "x2", "y2", "x3", "y3", "x4", "y4", "price", "lat", "lng"]
     df_right = pd.DataFrame(data_right, columns=column_right)
     df_right = df_right.iloc[1:, 0:12]
-    #print(df_right)
 
-    #pd.set_option('max_columns', None)
+    pd.set_option('max_columns', None)
     merged_df = pd.merge(df_left, df_right, on="polygon")
-    #print(merged_df.head(18))
 
     json_df = (merged_df.groupby(["polygon", "lat", "lng", "x1", "y1", "x2", "y2", "x3", "y3", "x4", "y4"])
                         .apply(lambda x: x[["store_id", "price", "Lat_e7", "Lng_e7",
@@ -61,8 +58,6 @@ if __name__ == '__main__':
                         .reset_index()
                         .rename(columns={0: "store_info", 1: "poly"})
                         .to_json(orient="records"))
-    #print(json.dumps(json.loads(json_df), indent=2, sort_keys=False))
-    #print(type(json.loads(json_df)))
 
     count = 0
     my_data = json.loads(json_df)
