@@ -96,7 +96,7 @@ if __name__ == "__main__":
     df_all = pd.merge(df_final, df_org, on="Script Num", how="inner")
     df_all.to_excel("D:\Jun22\output\prompt_test_base_output.xlsx", sheet_name="sheet1", index=False)
 
-    #Note: For the Attributes columns in the output excel, do the following operations:
+    #Note: For the Attributes column in the output excel, do the following operations:
     #      (1) ' to "
     #      (2) Can"t Tell to Can't Tell
     #      (3) True to true
