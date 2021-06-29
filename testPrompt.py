@@ -14,6 +14,16 @@ def getSeries(id):
     series = prefix + '0'*(5-id_len) + id_str
     return str(series)
 
+def concatData(df_current, position_count, pos):
+    for index1, row1 in df_current.iterrows():
+        df_current._set_value(index1, "Script Num", row["Script Num"])
+        df_current._set_value(index1, "Script Name", bus_prefix + str(row["Script Num"]))
+        curr_dict = row1["Attributes"]
+        curr_dict["store_id"] = curr_poly["store_id"][pos]
+        curr_dict["Position"] = position_count
+        df_current._set_value(index1, "Attributes", str(curr_dict))
+        position_count += 1
+
 if __name__ == "__main__":
     #"global" variables
     dataTable = "D:\Jun22\output\Test_prompt.xlsx"
@@ -51,27 +61,13 @@ if __name__ == "__main__":
         curr_poly = json.loads(row["Script Attributes"])
         store_num = len(curr_poly["store_id"])
         if store_num == 1:
-            for index1, row1 in df_current.iterrows():
-                df_current._set_value(index1, "Script Num", row["Script Num"])
-                df_current._set_value(index1, "Script Name", bus_prefix + str(row["Script Num"]))
-                curr_dict = row1["Attributes"]
-                curr_dict["store_id"] = curr_poly["store_id"][0]
-                curr_dict["Position"] = position_count
-                df_current._set_value(index1, "Attributes", str(curr_dict))
-                position_count += 1
+            concatData(df_current, position_count, 0)
             df_final = pd.concat([df_final, df_current])
             df_current = df_current.iloc[0:0]
         else:
             for i in range(store_num):
                 df_current = df_input.copy(deep=True)
-                for index2, row2 in df_current.iterrows():
-                    df_current._set_value(index2, "Script Num", row["Script Num"])
-                    df_current._set_value(index2, "Script Name", bus_prefix + str(row["Script Num"]))
-                    curr_dict = row2["Attributes"]
-                    curr_dict["store_id"] = curr_poly["store_id"][i]
-                    curr_dict["Position"] = position_count
-                    df_current._set_value(index2, "Attributes", str(curr_dict))
-                    position_count += 1
+                concatData(df_current, position_count, i)
                 df_final = pd.concat([df_final, df_current])
                 df_current = df_current.iloc[0:0]
 
