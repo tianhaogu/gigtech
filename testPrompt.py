@@ -80,14 +80,7 @@ if __name__ == "__main__":
     for index, row in df_final.iterrows():
         df_final._set_value(index, "Corpus Code", getSeries(corpus_count))
         corpus_count += 1
-        # print(row["Attributes"])
-        # print(type(row["Attributes"]))
-        # print("*********")
-        #convert_back = json.dumps(row["Attributes"])
-        #df_final._set_value(index, "Attributes", convert_back)
-        # print(convert_back)
-        # print(type(convert_back))
-        # print("------------------------------------------")
+
     df_final["Repeat Times"] = 5
     df_final["Duration"] = 43200
     df_final["Project ID"] = 223
