@@ -24,6 +24,20 @@ def concatData(df_current, position_count, pos):
         curr_dict["Position"] = position_count
         df_current._set_value(index1, "Attributes", str(curr_dict))
         position_count += 1
+        # for rows with type "input", check whether input has ("name", "store_id") key-value pair
+        if row1["Type"] == "input":
+            for j, curr_input in enumerate(row1["Inputs"]):
+                if ("name", "store_id") in curr_input.items():
+                    reg_str = "^("
+                    for k, store in enumerate(curr_poly["store_id"]):
+                        reg_str += ('(' + str(curr_poly["store_id"][k]) + ')')
+                        if k != len(curr_poly["store_id"]) - 1:
+                            reg_str += '|'
+                    reg_str += ")$"
+                    curr_input["regex"] = reg_str
+                    row1["Inputs"][j] = curr_input
+                    input_list = row1["Inputs"]
+                    df_current._set_value(index1, "Inputs", str(input_list))
 
 if __name__ == "__main__":
     #"global" variables
@@ -52,8 +66,12 @@ if __name__ == "__main__":
     df_input = pd.DataFrame(data_input, columns=column_input)
     #change data type of "Attributes" from string to json object (dictionary)
     for index, row in df_input.iterrows():
-        converted = json.loads(row["Attributes"])
-        df_input._set_value(index, "Attributes", converted)
+        converted_attr = json.loads(row["Attributes"])
+        df_input._set_value(index, "Attributes", converted_attr)
+        if row["Type"] == "input":
+            converted_input = json.loads(row["Inputs"])
+            print(type(converted_input))
+            df_input._set_value(index, "Inputs", converted_input)
     pd.set_option('max_columns', None)
 
     #for input table, alter the "Script Num", "Script Name", "Attributes" columns from the polygon & store info table
@@ -96,7 +114,7 @@ if __name__ == "__main__":
     df_all = pd.merge(df_final, df_org, on="Script Num", how="inner")
     df_all.to_excel("D:\Jun22\output\prompt_test_base_output.xlsx", sheet_name="sheet1", index=False)
 
-    #Note: For the Attributes column in the output excel, do the following operations:
+    #Note: For the Attributes columns in the output excel, do the following operations:
     #      (1) ' to "
     #      (2) Can"t Tell to Can't Tell
     #      (3) True to true
